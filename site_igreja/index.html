@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Monte Claro</title>
+</head>
+<body>
+
+    <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon"/>
+    <label for="menu-icon"></label>
+<nav class="nav"> 		
+    <ul class="pt-5">
+        <li><a href="#inicio">Início</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#avisos">Avisos</a></li>
+        <li><a href="#cursos">Cursos</a></li>
+        <li><a href="joama.html">Joama</a></li>
+    </ul>
+</nav>
+
+    <section id="inicio">
+        <h1 class="main-title">Nossa Senhora do Monte Claro</h1>
+    </section>
+
+    <section id="sobre" class="about-section"> 
+        <div class="container">
+            <h2 class="section-title">Sobre Nossa Paróquia</h2>
+            <p class="section-text">
+                Nossa Senhora do Monte Claro é um título dedicado à Virgem Maria, que simboliza proteção, esperança e luz para os fiéis. Assim como o monte que se destaca na paisagem, ela é vista como guia espiritual, uma presença elevada que intercede junto a Deus em favor de seus filhos. A devoção a Nossa Senhora do Monte Claro carrega um profundo significado de fé, amor e acolhimento. Nossa igreja é um espaço de oração, encontro e fortalecimento espiritual, onde todos são bem-vindos para celebrar, agradecer e renovar sua esperança sob o olhar amoroso de Maria.
+            </p>
+        </div>
+    </section>
+
+    <section id="avisos" class="avisos-container">
+		<div class="avisos">
+			<h2>Avisos Importantes</h2>
+			<ul>
+				<li>Está chegando a nossa Mega Festa Julina!</li>
+				<li>MEGA FESTA JULINA da Paróquia Nossa Senhora do Monte Claro!</li>
+				<li>DIAS: 07 e 08 de Julho - LOCAL: Centro de Convenções Silvana Kuhn (R. Curió, 561 - Colonia Dona Luiza)</li>
+			</ul>
+		</div>
+	
+		<div class="imagem">
+			<img src="img/avisos/saojoao.jpg" alt="Imagem de Avisos" />
+		</div>
+	</section>
+
+
+	<section id="cursos" class="cursos-section">
+		<div class="container">
+			<h2 class="section-title">Informação sobre Cursos</h2>
+			<div class="cursos-container">
+				<div class="curso">
+    <h3>Crisma</h3>
+    <div class="curso-imagem">
+        <img src="img/projetos/crisma.webp" alt="Crisma" style="width:100%;height:auto;border-radius:10px;">
+    </div>
+    <p>Para mais informações entre em contato com (47) 3455-5072</p>
+</div>
+<div class="curso">
+    <h3>Cursos Padrinhos</h3>
+    <div class="curso-imagem">
+        <img src="img/projetos/batismo.jpeg" alt="Curso de Padrinhos" style="width:100%;height:auto;border-radius:10px;">
+    </div>
+    <p>Para mais informações entre em contato com (47) 3455-5072</p>
+</div>
+<div class="curso">
+    <h3>Catequese</h3>
+    <div class="curso-imagem">
+        <img src="img/projetos/catequese.jpg" alt="Curso de Catequese" style="width:100%;height:auto;border-radius:10px;">
+    </div>
+    <p>Para mais informações entre em contato com (47) 3455-5072</p>
+</div>
+			</div>
+		</div>
+	</section>
+
+
+	<section id="doacoes" class="doacoes-section">
+    <div class="container">
+        <h2 class="section-title">Doações</h2>
+        <div class="doacoes-container">
+            <div class="doacao">
+                <h3>Doações Financeiras</h3>
+                <p>Contribua financeiramente para apoiar nossas atividades e projetos. Entre em contato para mais informações.</p>
+            </div>
+            <div class="doacao">
+                <h3>Doações de Bens Materiais</h3>
+                <p>Doe alimentos, roupas ou outros itens que possam ajudar nossa comunidade.</p>
+            </div>
+            <div class="doacao">
+                <h3>Doações de Serviços</h3>
+                <p>Ofereça seu tempo e habilidades para ajudar em nossas atividades e eventos.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="calendario-section">
+    <h2 class="calendario-title">Calendário e Agenda do Mês</h2>
+    <div class="calendario">
+      <div class="calendario-header" id="mes-ano"></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Dom</th>
+            <th>Seg</th>
+            <th>Ter</th>
+            <th>Qua</th>
+            <th>Qui</th>
+            <th>Sex</th>
+            <th>Sáb</th>
+          </tr>
+        </thead>
+        <tbody id="dias-calendario"></tbody>
+      </table>
+    </div>
+  </div>
+  
+    <script src="script.js"></script>
+</body>
+</html>
