@@ -642,3 +642,18 @@ td:hover {
     font-size: 8vh;
   }
 }
+
+.evento {
+  display: block;
+  font-size: 0.7em;
+  color: #b22222;
+  margin-top: 2px;
+  line-height: 1.1;
+  white-space: nowrap;
+  font-weight: 500;
+  opacity: 0.8;
+}
+th, td {
+  padding: 8px;
+  font-size: 1.1rem;
+}

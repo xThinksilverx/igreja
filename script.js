@@ -37,7 +37,7 @@ function getNomeMes(mes) {
     const ultimoDiaDoMes = new Date(anoAtual, mesAtual + 1, 0).getDate();
   
     const tbody = document.getElementById('dias-calendario');
-    tbody.innerHTML = ''; // Limpa conteúdo anterior
+    tbody.innerHTML = '';
   
     let linha = document.createElement('tr');
     let diaContador = 1;
@@ -65,6 +65,33 @@ function getNomeMes(mes) {
         coluna.classList.add('fim-de-semana');
       }
   
+      if (diaSemana === 0) { 
+      const evento = document.createElement('div');
+      evento.className = 'evento';
+      evento.textContent = 'Missa das 19 às 20';
+      coluna.appendChild(document.createElement('br'));
+      coluna.appendChild(evento);
+    } else if (diaSemana === 6) { 
+      const evento = document.createElement('div');
+      evento.className = 'evento';
+      evento.textContent = 'Missa das 07 às 08';
+      coluna.appendChild(document.createElement('br'));
+      coluna.appendChild(evento);
+    } else if (diaSemana === 3) { 
+    const evento = document.createElement('div');
+    evento.className = 'evento';
+    evento.textContent = 'Catequese';
+    coluna.appendChild(document.createElement('br'));
+    coluna.appendChild(evento);
+  } else if (diaSemana === 4) { 
+    const evento = document.createElement('div');
+    evento.className = 'evento';
+    evento.textContent = 'Crisma';
+    coluna.appendChild(document.createElement('br'));
+    coluna.appendChild(evento);
+  }
+    
+
       linha.appendChild(coluna);
       diaContador++;
     }
@@ -80,7 +107,7 @@ function getNomeMes(mes) {
 
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            menuCheckbox.checked = false; // Fecha o menu
+            menuCheckbox.checked = false; 
         });
     });
 });
