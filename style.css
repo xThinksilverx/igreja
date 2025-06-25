@@ -17,9 +17,9 @@ body {
   width: 100%;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+  html {
+    scroll-behavior: smooth;
+  }
 
 body {
   height: auto; 
@@ -397,7 +397,7 @@ h1{
   padding: 20px;
   text-align: center;
   width: 300px; 
-  height: 200px;
+  height: 300px;
   display: flex;
   flex-direction: column; 
   justify-content: center;
@@ -603,6 +603,36 @@ td:hover {
   transition-delay: 1640ms;
 }
 
+.footer-site {
+  width: 100%;
+  background: #ffffff;
+  color: #0f0f0f;
+  text-align: center;
+  padding: 18px 10px 8px 18px;
+  font-size: 1em;
+  z-index: 10;
+}
+.footer-site .footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.footer-site .footer-content span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.footer-site .footer-content a {
+  color: #ffeba7;
+  text-decoration: underline;
+}
+.footer-site .footer-copy {
+  font-size: 0.95em;
+  opacity: 0.8;
+}
+
 
 
 .logo {
@@ -656,4 +686,20 @@ td:hover {
 th, td {
   padding: 8px;
   font-size: 1.1rem;
+}
+
+/* Sticky footer só se a página for curta */
+html {
+  min-height: 100%;
+  position: relative;
+}
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding-bottom: 120px; /* espaço para o footer */
+}
+.footer-site {
+  position: absolute;
+  left: 0;
+  bottom: 0;
 }
