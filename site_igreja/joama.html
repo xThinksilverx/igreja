@@ -3,55 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grupo de Jovens - Joama</title>
+    <meta name="description" content="Grupo de Jovens Juama - Paróquia Monte Claro">
+    <title>Grupo de Jovens - Juama</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Menu Mobile -->
+    <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" aria-label="Menu de navegação"/>
+    <label for="menu-icon" aria-label="Abrir menu"></label>
+    
+    <!-- Navegação -->
+    <nav class="nav" aria-label="Menu principal"> 		
+        <ul class="pt-5">
+            <li><a href="index.html#inicio">Início</a></li>
+            <li><a href="index.html#sobre">Sobre</a></li>
+            <li><a href="index.html#avisos">Avisos</a></li>
+            <li><a href="index.html#cursos">Cursos</a></li>
+            <li><a href="index.html#doacoes">Doações</a></li>
+        </ul>
+    </nav>
 
-    <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon"/>
-    <label for="menu-icon"></label>
-    <nav class="nav"> 		
-    <ul class="pt-5">
-        <li><a href="index.html#inicio">Início</a></li>
-        <li><a href="index.html#sobre">Sobre</a></li>
-        <li><a href="index.html#avisos">Avisos</a></li>
-        <li><a href="index.html#cursos">Cursos</a></li>
-        <li><a href="joama.html">Joama</a></li>
-    </ul>
-</nav>
-
+    <!-- Hero Section -->
     <section id="inicio">
-        <h1 class="main-title">Grupo de Jovens Joama</h1>
+        <h1 class="main-title">Grupo de Jovens Juama</h1>
     </section>
 
+    <!-- Sobre o Joama -->
     <section class="about-section visible">
         <div class="container">
-            <h2 class="section-title">Sobre o Grupo Joama</h2>
+            <h2 class="section-title">Sobre o Grupo Juama</h2>
             <p class="section-text">
-                O Grupo de Jovens Joama é um espaço dedicado à juventude da nossa paróquia. Por meio de encontros, partilhas, celebrações e ações sociais, buscamos fortalecer a fé, cultivar amizades verdadeiras e promover o amor ao próximo. Somos movidos pelo Espírito Santo e pelo exemplo de Maria, caminhando juntos para sermos luz no mundo.
+                O Grupo de Jovens Juama é um espaço dedicado à juventude da nossa paróquia. Por meio de encontros, partilhas, celebrações e ações sociais, buscamos fortalecer a fé, cultivar amizades verdadeiras e promover o amor ao próximo. Somos movidos pelo Espírito Santo e pelo exemplo de Maria, caminhando juntos para sermos luz no mundo.
             </p>
-            <p class="section-text" style="margin-top: 20px;">
+            <p class="section-text">
                 Se você é jovem e deseja fazer parte de algo maior, venha nos conhecer! Nossos encontros acontecem todo sábado às 18h no salão paroquial. Siga nossas redes sociais para mais informações e participe!
             </p>
-            <div class="contatos-joama" style="margin-top: 30px; text-align: center;">
-            <p>
-                <i class="fas fa-phone-alt" style="color:#b38e5d; margin-right:8px;"></i>
-                (47) 91234-5678
-            </p>
-            <p>
-                <i class="fab fa-instagram" style="color:#b38e5d; margin-right:8px;"></i>
-                <a href="https://www.instagram.com/paroquiamonteclaro/" target="_blank" style="color:inherit; text-decoration:underline;">@joamaoficial</a>
-            </p>
-            <p>
-                <i class="fas fa-map-marker-alt" style="color:#b38e5d; margin-right:8px;"></i>
-                R. Curió, 561 - Colonia Dona Luiza, Ponta Grossa/PR
-            </p>
+            
+            <!-- Contatos -->
+            <div class="contatos-joama">
+                <p>
+                    <i class="fas fa-phone-alt"></i>
+                    <a href="tel:+5547912345678">(47) 91234-5678</a>
+                </p>
+                <p>
+                    <i class="fab fa-instagram"></i>
+                    <a href="https://www.instagram.com/juamaoficial/" target="_blank" rel="noopener noreferrer">@juamaoficial</a>
+                </p>
+                <p>
+                    <i class="fas fa-map-marker-alt"></i>
+                    R. Hilda Rech, 50 - Vila Nova, Joinville - SC
+                </p>
+            </div>
         </div>
-        </div>
-        
-
     </section>
+
+    <!-- Footer -->
+    <footer class="footer-site">
+        <div class="footer-content">
+            <span>
+                <i class="fas fa-phone-alt"></i>
+                <a href="tel:+554734555072">(47) 3455-5072</a>
+            </span>
+            <span>
+                <i class="fab fa-instagram"></i>
+                <a href="https://www.instagram.com/paroquiamonteclaro/" target="_blank" rel="noopener noreferrer">@paroquiamonteclaro</a>
+            </span>
+            <span>
+                <i class="fas fa-map-marker-alt"></i>
+                R. Hilda Rech, 50 - Vila Nova, Joinville - SC
+            </span>
+        </div>
+        <div class="footer-copy">
+            © Todos os direitos reservados à Paróquia Monte Claro
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>

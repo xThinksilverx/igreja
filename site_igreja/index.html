@@ -3,27 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Paróquia Nossa Senhora do Monte Claro - Joinville, SC">
     <link rel="stylesheet" href="style.css">
-    <title>Monte Claro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Paróquia Monte Claro</title>
 </head>
 <body>
+    <!-- Menu Mobile -->
+    <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" aria-label="Menu de navegação"/>
+    <label for="menu-icon" aria-label="Abrir menu"></label>
+    
+    <!-- Navegação -->
+    <nav class="nav" aria-label="Menu principal"> 		
+        <ul class="pt-5">
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#avisos">Avisos</a></li>
+            <li><a href="#cursos">Cursos</a></li>
+            <li><a href="#doacoes">Doações</a></li>
+            <li><a href="juama.html">Juama</a></li>
+        </ul>
+    </nav>
 
-    <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon"/>
-    <label for="menu-icon"></label>
-<nav class="nav"> 		
-    <ul class="pt-5">
-        <li><a href="#inicio">Início</a></li>
-        <li><a href="#sobre">Sobre</a></li>
-        <li><a href="#avisos">Avisos</a></li>
-        <li><a href="#cursos">Cursos</a></li>
-        <li><a href="joama.html">Joama</a></li>
-    </ul>
-</nav>
-
+    <!-- Hero Section -->
     <section id="inicio">
         <h1 class="main-title">Nossa Senhora do Monte Claro</h1>
     </section>
 
+    <!-- Sobre -->
     <section id="sobre" class="about-section"> 
         <div class="container">
             <h2 class="section-title">Sobre Nossa Paróquia</h2>
@@ -33,93 +39,119 @@
         </div>
     </section>
 
+    <!-- Avisos -->
     <section id="avisos" class="avisos-container">
-		<div class="avisos">
-			<h2>Avisos Importantes</h2>
-			<ul>
-				<li>Está chegando a nossa Mega Festa Julina!</li>
-				<li>MEGA FESTA JULINA da Paróquia Nossa Senhora do Monte Claro!</li>
-				<li>DIAS: 07 e 08 de Julho - LOCAL: Centro de Convenções Silvana Kuhn (R. Curió, 561 - Colonia Dona Luiza)</li>
-			</ul>
-		</div>
-	
-		<div class="imagem">
-			<img src="img/avisos/saojoao.jpg" alt="Imagem de Avisos" />
-		</div>
-	</section>
+        <div class="avisos">
+            <h2>Avisos Importantes</h2>
+            <ul>
+                <li>Está chegando a nossa Mega Festa Julina!</li>
+                <li>MEGA FESTA JULINA da Paróquia Nossa Senhora do Monte Claro!</li>
+                <li>12 de Julho na comunidade Nossa Senhora do Monte Claro - Rua Hilda Rech, 30 - Vila Nova!</li>
+            </ul>
+        </div>
+        <div class="imagem">
+            <img src="img/avisos/festa_junina.jpeg" alt="Cartaz da Mega Festa Julina 2025" loading="lazy"/>
+        </div>
+    </section>
 
-
-	<section id="cursos" class="cursos-section">
-		<div class="container">
-			<h2 class="section-title">Informação sobre Cursos</h2>
-			<div class="cursos-container">
-				<div class="curso">
-    <h3>Crisma</h3>
-    <div class="curso-imagem">
-        <img src="img/projetos/crisma.webp" alt="Crisma" style="width:100%;height:auto;border-radius:10px;">
-    </div>
-    <p>Para mais informações entre em contato com (47) 3455-5072</p>
-</div>
-<div class="curso">
-    <h3>Cursos Padrinhos</h3>
-    <div class="curso-imagem">
-        <img src="img/projetos/batismo.jpeg" alt="Curso de Padrinhos" style="width:100%;height:auto;border-radius:10px;">
-    </div>
-    <p>Para mais informações entre em contato com (47) 3455-5072</p>
-</div>
-<div class="curso">
-    <h3>Catequese</h3>
-    <div class="curso-imagem">
-        <img src="img/projetos/catequese.jpg" alt="Curso de Catequese" style="width:100%;height:auto;border-radius:10px;">
-    </div>
-    <p>Para mais informações entre em contato com (47) 3455-5072</p>
-</div>
-			</div>
-		</div>
-	</section>
-
-
-	<section id="doacoes" class="doacoes-section">
-    <div class="container">
-        <h2 class="section-title">Doações</h2>
-        <div class="doacoes-container">
-            <div class="doacao">
-                <h3>Doações Financeiras</h3>
-                <p>Contribua financeiramente para apoiar nossas atividades e projetos. Entre em contato para mais informações.</p>
-            </div>
-            <div class="doacao">
-                <h3>Doações de Bens Materiais</h3>
-                <p>Doe alimentos, roupas ou outros itens que possam ajudar nossa comunidade.</p>
-            </div>
-            <div class="doacao">
-                <h3>Doações de Serviços</h3>
-                <p>Ofereça seu tempo e habilidades para ajudar em nossas atividades e eventos.</p>
+    <!-- Cursos -->
+    <section id="cursos" class="cursos-section">
+        <div class="container">
+            <h2 class="section-title">Informação sobre Cursos</h2>
+            <div class="cursos-container">
+                <article class="curso">
+                    <h3>Crisma</h3>
+                    <div class="curso-imagem">
+                        <img src="img/projetos/crisma.webp" alt="Sacramento da Crisma" loading="lazy">
+                    </div>
+                    <p>Todas as quintas na igreja. Para mais informações sobre inscrição entre em contato com<br>(47) 3455-5072</p>
+                </article>
+                
+                <article class="curso">
+                    <h3>Curso de Padrinhos</h3>
+                    <div class="curso-imagem">
+                        <img src="img/projetos/batismo.jpeg" alt="Curso de Padrinhos de Batismo" loading="lazy">
+                    </div>
+                    <p>Informações sobre curso de padrinhos para batismo entre em contato com a secretaria no número (47) 3455-5072</p>
+                </article>
+                
+                <article class="curso">
+                    <h3>Catequese</h3>
+                    <div class="curso-imagem">
+                        <img src="img/projetos/catequese.jpg" alt="Aulas de Catequese" loading="lazy">
+                    </div>
+                    <p>Todas as quartas-feiras aulas de catequese, para saber mais sobre inscrições entre em contato com o número (47) 3455-5072</p>
+                </article>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<div class="calendario-section">
-    <h2 class="calendario-title">Calendário e Agenda do Mês</h2>
-    <div class="calendario">
-      <div class="calendario-header" id="mes-ano"></div>
-      <table>
-        <thead>
-          <tr>
-            <th>Dom</th>
-            <th>Seg</th>
-            <th>Ter</th>
-            <th>Qua</th>
-            <th>Qui</th>
-            <th>Sex</th>
-            <th>Sáb</th>
-          </tr>
-        </thead>
-        <tbody id="dias-calendario"></tbody>
-      </table>
-    </div>
-  </div>
-  
+    <!-- Doações -->
+    <section id="doacoes" class="doacoes-section">
+        <div class="container">
+            <h2 class="section-title">Doações</h2>
+            <div class="doacoes-container">
+                <article class="doacao">
+                    <h3>Doações Financeiras</h3>
+                    <p>Contribua financeiramente para apoiar nossas atividades e projetos. Entre em contato com a secretaria para mais informações.</p>
+                </article>
+                
+                <article class="doacao">
+                    <h3>Doações de Bens Materiais</h3>
+                    <p>Doe alimentos, roupas ou outros itens que possam ajudar nossa comunidade. Podem ser doados na secretaria da Igreja durante horário comercial</p>
+                </article>
+                
+                <article class="doacao">
+                    <h3>Doações de Serviços</h3>
+                    <p>Ofereça seu tempo e habilidades para ajudar em nossas atividades e eventos. Para saber mais como ajudar a comunidade, entre em contato com a secretaria ou nossos coordenadores</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calendário -->
+    <section class="calendario-section">
+        <h2 class="calendario-title">Calendário e Agenda do Mês</h2>
+        <div class="calendario">
+            <div class="calendario-header" id="mes-ano"></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dom</th>
+                        <th>Seg</th>
+                        <th>Ter</th>
+                        <th>Qua</th>
+                        <th>Qui</th>
+                        <th>Sex</th>
+                        <th>Sáb</th>
+                    </tr>
+                </thead>
+                <tbody id="dias-calendario"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-site">
+        <div class="footer-content">
+            <span>
+                <i class="fas fa-phone-alt"></i>
+                <a href="tel:+554734555072">(47) 3455-5072</a>
+            </span>
+            <span>
+                <i class="fab fa-instagram"></i>
+                <a href="https://www.instagram.com/paroquiamonteclaro/" target="_blank" rel="noopener noreferrer">@paroquiamonteclaro</a>
+            </span>
+            <span>
+                <i class="fas fa-map-marker-alt"></i>
+                R. Hilda Rech, 50 - Vila Nova, Joinville - SC
+            </span>
+        </div>
+        <div class="footer-copy">
+            © Todos os direitos reservados à Paróquia Monte Claro
+        </div>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
