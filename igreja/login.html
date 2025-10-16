@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Área Administrativa - Paróquia Monte Claro">
+    <title>Login - Paróquia Monte Claro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Menu Mobile -->
+    <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" aria-label="Menu de navegação"/>
+    <label for="menu-icon" aria-label="Abrir menu"></label>
+    
+    <!-- Navegação -->
+    <nav class="nav" aria-label="Menu principal"> 		
+        <ul class="pt-5">
+            <li><a href="index.html#inicio">Início</a></li>
+            <li><a href="index.html#sobre">Sobre</a></li>
+            <li><a href="index.html#avisos">Avisos</a></li>
+            <li><a href="index.html#cursos">Cursos</a></li>
+            <li><a href="index.html#doacoes">Doações</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio">
+        <h1 class="main-title">Área Administrativa</h1>
+    </section>
+
+    <!-- Container de Login/Cadastro -->
+    <section class="auth-section visible">
+        <div class="auth-container">
+            <!-- Formulário de Login -->
+            <div class="auth-form" id="login-form">
+                <div class="form-header">
+                    <i class="fas fa-user-shield"></i>
+                    <h2>Login Administrativo</h2>
+                    <p>Acesse o painel de gerenciamento</p>
+                </div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">
+                            <i class="fas fa-envelope"></i>
+                            E-mail
+                        </label>
+                        <input 
+                            type="email" 
+                            id="login-email" 
+                            name="email" 
+                            placeholder="seu@email.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">
+                            <i class="fas fa-lock"></i>
+                            Senha
+                        </label>
+                        <input 
+                            type="password" 
+                            id="login-password" 
+                            name="password" 
+                            placeholder="••••••••"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Entrar
+                    </button>
+
+                    <div class="form-footer">
+                        <a href="#" class="link-secondary">Esqueceu a senha?</a>
+                    </div>
+                </form>
+
+                <div class="form-divider">
+                    <button class="btn-switch" onclick="showRegisterForm()">
+                        <i class="fas fa-user-plus"></i>
+                        Cadastrar novo administrador
+                    </button>
+                </div>
+            </div>
+
+            <!-- Formulário de Cadastro (Admin) -->
+            <div class="auth-form hidden" id="register-form">
+                <div class="form-header">
+                    <i class="fas fa-user-lock"></i>
+                    <h2>Cadastro Administrativo</h2>
+                    <p class="alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Apenas administradores podem criar novas contas
+                    </p>
+                </div>
+
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="admin-key">
+                            <i class="fas fa-key"></i>
+                            Chave de Administrador
+                        </label>
+                        <input 
+                            type="password" 
+                            id="admin-key" 
+                            name="adminKey" 
+                            placeholder="Digite a chave administrativa"
+                            required
+                        >
+                        <small class="form-hint">Solicite a chave com o administrador principal</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-name">
+                            <i class="fas fa-user"></i>
+                            Nome Completo
+                        </label>
+                        <input 
+                            type="text" 
+                            id="register-name" 
+                            name="name" 
+                            placeholder="Seu nome completo"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-email">
+                            <i class="fas fa-envelope"></i>
+                            E-mail
+                        </label>
+                        <input 
+                            type="email" 
+                            id="register-email" 
+                            name="email" 
+                            placeholder="seu@email.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-password">
+                            <i class="fas fa-lock"></i>
+                            Senha
+                        </label>
+                        <input 
+                            type="password" 
+                            id="register-password" 
+                            name="password" 
+                            placeholder="Mínimo 8 caracteres"
+                            minlength="8"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-password-confirm">
+                            <i class="fas fa-lock"></i>
+                            Confirmar Senha
+                        </label>
+                        <input 
+                            type="password" 
+                            id="register-password-confirm" 
+                            name="passwordConfirm" 
+                            placeholder="Digite a senha novamente"
+                            minlength="8"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-user-check"></i>
+                        Cadastrar
+                    </button>
+                </form>
+
+                <div class="form-divider">
+                    <button class="btn-switch" onclick="showLoginForm()">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar para login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-site">
+        <div class="footer-content">
+            <span>
+                <i class="fas fa-phone-alt"></i>
+                <a href="tel:+554734555072">(47) 3455-5072</a>
+            </span>
+            <span>
+                <i class="fab fa-instagram"></i>
+                <a href="https://www.instagram.com/paroquiamonteclaro/" target="_blank" rel="noopener noreferrer">@paroquiamonteclaro</a>
+            </span>
+            <span>
+                <i class="fas fa-map-marker-alt"></i>
+                R. Hilda Rech, 50 - Vila Nova, Joinville - SC
+            </span>
+        </div>
+        <div class="footer-copy">
+            © Todos os direitos reservados à Paróquia Monte Claro
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
