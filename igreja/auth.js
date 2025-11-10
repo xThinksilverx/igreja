@@ -2,7 +2,10 @@
 // CONFIGURAÇÃO E CONSTANTES
 // ==========================================
 const ADMIN_KEY = "MonteClaroAdmin2025";
-const API_BASE_URL = "/igreja/api"; // Ajuste conforme sua estrutura de pastas
+
+// Configuração do caminho da API
+// Como os arquivos estão em htdocs/ diretamente, use:
+const API_BASE_URL = "api";
 
 // ==========================================
 // FUNÇÕES DE UI
@@ -85,6 +88,8 @@ async function handleLogin(event) {
     submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
     
     try {
+        console.log('Tentando login em:', `${API_BASE_URL}/login.php`);
+        
         const response = await fetch(`${API_BASE_URL}/login.php`, {
             method: 'POST',
             headers: {
@@ -96,7 +101,26 @@ async function handleLogin(event) {
             })
         });
         
-        const result = await response.json();
+        console.log('Status da resposta:', response.status);
+        
+        // Verifica se a resposta é OK
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        // Tenta ler como texto primeiro para debug
+        const textResponse = await response.text();
+        console.log('Resposta raw:', textResponse);
+        
+        // Tenta parsear como JSON
+        let result;
+        try {
+            result = JSON.parse(textResponse);
+        } catch (e) {
+            console.error('Erro ao parsear JSON:', e);
+            console.error('Resposta recebida:', textResponse);
+            throw new Error('Resposta inválida do servidor');
+        }
         
         if (result.success) {
             showAlert(result.message, 'success');
@@ -118,8 +142,8 @@ async function handleLogin(event) {
         }
         
     } catch (error) {
-        console.error('Erro ao fazer login:', error);
-        showAlert('Erro ao conectar com o servidor. Tente novamente.', 'error');
+        console.error('Erro completo:', error);
+        showAlert('Erro ao conectar com o servidor. Verifique o console (F12).', 'error');
         submitButton.disabled = false;
         submitButton.innerHTML = originalText;
     }
@@ -160,6 +184,8 @@ async function handleRegister(event) {
     submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
     
     try {
+        console.log('Tentando cadastro em:', `${API_BASE_URL}/register.php`);
+        
         const response = await fetch(`${API_BASE_URL}/register.php`, {
             method: 'POST',
             headers: {
@@ -174,7 +200,26 @@ async function handleRegister(event) {
             })
         });
         
-        const result = await response.json();
+        console.log('Status da resposta:', response.status);
+        
+        // Verifica se a resposta é OK
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        // Tenta ler como texto primeiro para debug
+        const textResponse = await response.text();
+        console.log('Resposta raw:', textResponse);
+        
+        // Tenta parsear como JSON
+        let result;
+        try {
+            result = JSON.parse(textResponse);
+        } catch (e) {
+            console.error('Erro ao parsear JSON:', e);
+            console.error('Resposta recebida:', textResponse);
+            throw new Error('Resposta inválida do servidor. Verifique se o banco de dados está configurado.');
+        }
         
         if (result.success) {
             showAlert(result.message, 'success');
@@ -191,8 +236,8 @@ async function handleRegister(event) {
         submitButton.innerHTML = originalText;
         
     } catch (error) {
-        console.error('Erro ao cadastrar:', error);
-        showAlert('Erro ao conectar com o servidor. Tente novamente.', 'error');
+        console.error('Erro completo:', error);
+        showAlert('Erro ao conectar com o servidor. Verifique o console (F12).', 'error');
         submitButton.disabled = false;
         submitButton.innerHTML = originalText;
     }
@@ -210,9 +255,10 @@ async function checkIfLoggedIn() {
         // Verifica com o servidor se a sessão ainda é válida
         try {
             const response = await fetch(`${API_BASE_URL}/check-session.php`);
-            const result = await response.json();
+            const textResponse = await response.text();
+            const result = JSON.parse(textResponse);
             
-            if (result.success && result.isLoggedIn) {
+            if (result.success && result.data && result.data.isLoggedIn) {
                 window.location.href = 'admin-panel.html';
             } else {
                 // Sessão expirada, limpa localStorage
@@ -220,6 +266,7 @@ async function checkIfLoggedIn() {
             }
         } catch (error) {
             console.error('Erro ao verificar sessão:', error);
+            localStorage.removeItem('currentAdmin');
         }
     }
 }
@@ -248,5 +295,7 @@ async function logout() {
 // INICIALIZAÇÃO
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('API Base URL:', API_BASE_URL);
+    console.log('Caminho atual:', window.location.pathname);
     checkIfLoggedIn();
 });
