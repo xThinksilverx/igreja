@@ -4,7 +4,7 @@
 const ADMIN_KEY = "MonteClaroAdmin2025";
 
 // Configuração do caminho da API
-// Como os arquivos estão em htdocs/ diretamente, use:
+// Como os arquivos estão em htdocs/igreja/, use caminho relativo:
 const API_BASE_URL = "api";
 
 // ==========================================

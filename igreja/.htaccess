@@ -1,11 +1,4 @@
-# ==========================================
-# CONFIGURAÇÃO PARA XAMPP
-# ==========================================
-
-# Habilitar mod_rewrite
-RewriteEngine On
-
-# Definir charset padrão
+# Charset padrão
 AddDefaultCharset UTF-8
 
 # Prevenir listagem de diretórios
@@ -16,25 +9,6 @@ Options -Indexes
     Order allow,deny
     Deny from all
 </FilesMatch>
-
-# Headers de segurança
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-XSS-Protection "1; mode=block"
-</IfModule>
-
-# Habilitar CORS para API (se necessário)
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-</IfModule>
-
-# Compressão GZIP
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
-</IfModule>
 
 # Cache de arquivos estáticos
 <IfModule mod_expires.c>
