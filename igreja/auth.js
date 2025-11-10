@@ -1,6 +1,12 @@
-
+// ==========================================
+// CONFIGURAÇÃO E CONSTANTES
+// ==========================================
 const ADMIN_KEY = "MonteClaroAdmin2025";
+const API_BASE_URL = "/igreja/api"; // Ajuste conforme sua estrutura de pastas
 
+// ==========================================
+// FUNÇÕES DE UI
+// ==========================================
 function showRegisterForm() {
     document.getElementById('login-form').classList.add('hidden');
     document.getElementById('register-form').classList.remove('hidden');
@@ -9,20 +15,6 @@ function showRegisterForm() {
 function showLoginForm() {
     document.getElementById('register-form').classList.add('hidden');
     document.getElementById('login-form').classList.remove('hidden');
-}
-
-function validatePasswords(password, passwordConfirm) {
-    if (password !== passwordConfirm) {
-        showAlert('As senhas não coincidem!', 'error');
-        return false;
-    }
-    
-    if (password.length < 8) {
-        showAlert('A senha deve ter no mínimo 8 caracteres!', 'error');
-        return false;
-    }
-    
-    return true;
 }
 
 function showAlert(message, type = 'info') {
@@ -53,35 +45,90 @@ function showAlert(message, type = 'info') {
     }, 4000);
 }
 
-function handleLogin(event) {
+// ==========================================
+// VALIDAÇÃO
+// ==========================================
+function validatePasswords(password, passwordConfirm) {
+    if (password !== passwordConfirm) {
+        showAlert('As senhas não coincidem!', 'error');
+        return false;
+    }
+    
+    if (password.length < 8) {
+        showAlert('A senha deve ter no mínimo 8 caracteres!', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+// ==========================================
+// FUNÇÃO DE LOGIN (COM INTEGRAÇÃO API)
+// ==========================================
+async function handleLogin(event) {
     event.preventDefault();
     
     const formData = new FormData(event.target);
     const email = formData.get('email');
     const password = formData.get('password');
     
-    const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+    // Validação básica
+    if (!email || !password) {
+        showAlert('Preencha todos os campos!', 'error');
+        return;
+    }
     
-    const user = users.find(u => u.email === email && u.password === password);
+    // Desabilita o botão durante o processo
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
     
-    if (user) {
-        localStorage.setItem('currentAdmin', JSON.stringify({
-            name: user.name,
-            email: user.email,
-            loginTime: new Date().toISOString()
-        }));
+    try {
+        const response = await fetch(`${API_BASE_URL}/login.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
         
-        showAlert('Login realizado com sucesso!', 'success');
+        const result = await response.json();
         
-        setTimeout(() => {
-            window.location.href = 'admin-panel.html';
-        }, 1500);
-    } else {
-        showAlert('E-mail ou senha incorretos!', 'error');
+        if (result.success) {
+            showAlert(result.message, 'success');
+            
+            // Armazena informações do usuário logado (opcional, para exibição)
+            localStorage.setItem('currentAdmin', JSON.stringify({
+                name: result.data.nome,
+                email: result.data.email,
+                loginTime: new Date().toISOString()
+            }));
+            
+            setTimeout(() => {
+                window.location.href = 'admin-panel.html';
+            }, 1500);
+        } else {
+            showAlert(result.message, 'error');
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+        }
+        
+    } catch (error) {
+        console.error('Erro ao fazer login:', error);
+        showAlert('Erro ao conectar com o servidor. Tente novamente.', 'error');
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
     }
 }
 
-function handleRegister(event) {
+// ==========================================
+// FUNÇÃO DE CADASTRO (COM INTEGRAÇÃO API)
+// ==========================================
+async function handleRegister(event) {
     event.preventDefault();
     
     const formData = new FormData(event.target);
@@ -90,6 +137,12 @@ function handleRegister(event) {
     const email = formData.get('email');
     const password = formData.get('password');
     const passwordConfirm = formData.get('passwordConfirm');
+    
+    // Validações locais
+    if (!adminKey || !name || !email || !password || !passwordConfirm) {
+        showAlert('Todos os campos são obrigatórios!', 'error');
+        return;
+    }
     
     if (adminKey !== ADMIN_KEY) {
         showAlert('Chave administrativa inválida!', 'error');
@@ -100,55 +153,100 @@ function handleRegister(event) {
         return;
     }
     
-    const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+    // Desabilita o botão durante o processo
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
     
-    if (users.some(u => u.email === email)) {
-        showAlert('Este e-mail já está cadastrado!', 'error');
-        return;
+    try {
+        const response = await fetch(`${API_BASE_URL}/register.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                adminKey: adminKey,
+                name: name,
+                email: email,
+                password: password,
+                passwordConfirm: passwordConfirm
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert(result.message, 'success');
+            event.target.reset();
+            
+            setTimeout(() => {
+                showLoginForm();
+            }, 1500);
+        } else {
+            showAlert(result.message, 'error');
+        }
+        
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+        
+    } catch (error) {
+        console.error('Erro ao cadastrar:', error);
+        showAlert('Erro ao conectar com o servidor. Tente novamente.', 'error');
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
     }
-
-    users.push({
-        name,
-        email,
-        password,
-        createdAt: new Date().toISOString()
-    });
-    
-    localStorage.setItem('adminUsers', JSON.stringify(users));
-    
-    showAlert('Cadastro realizado com sucesso!', 'success');
-    
-    event.target.reset();
-    setTimeout(() => {
-        showLoginForm();
-    }, 1500);
 }
 
-function checkIfLoggedIn() {
+// ==========================================
+// VERIFICAÇÃO DE LOGIN
+// ==========================================
+async function checkIfLoggedIn() {
+    // Verifica se há dados locais (apenas para exibição)
     const currentAdmin = localStorage.getItem('currentAdmin');
     
+    // Se estiver na página de login e tiver sessão ativa, redireciona
     if (currentAdmin && window.location.pathname.includes('login.html')) {
-        window.location.href = 'admin-panel.html';
+        // Verifica com o servidor se a sessão ainda é válida
+        try {
+            const response = await fetch(`${API_BASE_URL}/check-session.php`);
+            const result = await response.json();
+            
+            if (result.success && result.isLoggedIn) {
+                window.location.href = 'admin-panel.html';
+            } else {
+                // Sessão expirada, limpa localStorage
+                localStorage.removeItem('currentAdmin');
+            }
+        } catch (error) {
+            console.error('Erro ao verificar sessão:', error);
+        }
     }
 }
 
-function logout() {
-    localStorage.removeItem('currentAdmin');
-    window.location.href = 'login.html';
+// ==========================================
+// FUNÇÃO DE LOGOUT
+// ==========================================
+async function logout() {
+    try {
+        await fetch(`${API_BASE_URL}/logout.php`, {
+            method: 'POST'
+        });
+        
+        localStorage.removeItem('currentAdmin');
+        window.location.href = 'login.html';
+        
+    } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+        // Remove dados locais mesmo se houver erro
+        localStorage.removeItem('currentAdmin');
+        window.location.href = 'login.html';
+    }
 }
 
+// ==========================================
+// INICIALIZAÇÃO
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     checkIfLoggedIn();
-    
-    const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-    if (users.length === 0) {
-        const defaultAdmin = {
-            name: 'Administrador',
-            email: 'admin@monteclaro.com',
-            password: 'admin123',
-            createdAt: new Date().toISOString()
-        };
-        localStorage.setItem('adminUsers', JSON.stringify([defaultAdmin]));
-        console.log('Usuário padrão criado: admin@monteclaro.com / admin123');
-    }
 });
