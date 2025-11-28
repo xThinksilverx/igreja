@@ -1,28 +1,16 @@
 <?php
-// Headers CORS
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Content-Type: application/json; charset=utf-8');
+session_start();
 
-// Trata requisição OPTIONS
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
+header('Content-Type: application/json');
 
-require_once '../config/db.php';
+$logado = isset($_SESSION['admin_id']);
 
-// Verifica se há sessão ativa
-if (isAdminLoggedIn()) {
-    sendResponse(true, 'Sessão ativa', [
-        'isLoggedIn' => true,
+echo json_encode([
+    'success' => true,
+    'data' => [
+        'isLoggedIn' => $logado,
         'nome' => $_SESSION['admin_nome'] ?? '',
         'email' => $_SESSION['admin_email'] ?? ''
-    ]);
-} else {
-    sendResponse(true, 'Sem sessão ativa', [
-        'isLoggedIn' => false
-    ]);
-}
+    ]
+]);
 ?>

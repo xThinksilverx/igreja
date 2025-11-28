@@ -1,21 +1,7 @@
-# Charset padrão
 AddDefaultCharset UTF-8
-
-# Prevenir listagem de diretórios
 Options -Indexes
 
-# Proteger arquivos de configuração
-<FilesMatch "^(db\.php|config\.php|\.env)$">
+<FilesMatch "^db\.php$">
     Order allow,deny
     Deny from all
 </FilesMatch>
-
-# Cache de arquivos estáticos
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-</IfModule>

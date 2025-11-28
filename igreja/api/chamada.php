@@ -1,46 +1,54 @@
 <?php
+header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Content-Type: application/json; charset=utf-8');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 require_once '../config/db.php';
 
-if (!isAdminLoggedIn()) {
-    sendResponse(false, 'Acesso negado. Faça login primeiro.');
+if (!isset($_SESSION['admin_id'])) {
+    resposta(false, 'Faça login primeiro');
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
-$conn = getConnection();
 
-// GET - Buscar informações de chamada
+// GET - Buscar/criar aula e listar presenças
 if ($method === 'GET') {
     try {
-        if (isset($_GET['aula_id'])) {
-            // Buscar chamada de uma aula específica
-            $aulaId = $_GET['aula_id'];
+        // Buscar ou criar aula
+        if (isset($_GET['turma_id']) && isset($_GET['data'])) {
+            $turma_id = $_GET['turma_id'];
+            $data = $_GET['data'];
             
-            // Busca informações da aula
-            $stmtAula = $conn->prepare("
-                SELECT a.*, t.nome as turma_nome, t.tipo as turma_tipo
-                FROM aulas a
-                INNER JOIN turmas t ON a.turma_id = t.id
-                WHERE a.id = ?
-            ");
-            $stmtAula->execute([$aulaId]);
-            $aula = $stmtAula->fetch();
+            // Busca aula
+            $stmt = $conn->prepare("SELECT * FROM aulas WHERE turma_id = ? AND data_aula = ?");
+            $stmt->execute([$turma_id, $data]);
+            $aula = $stmt->fetch(PDO::FETCH_ASSOC);
             
+            // Se não existe, cria
             if (!$aula) {
-                sendResponse(false, 'Aula não encontrada.');
+                $stmt = $conn->prepare("INSERT INTO aulas (turma_id, data_aula, admin_id) VALUES (?, ?, ?)");
+                $stmt->execute([$turma_id, $data, $_SESSION['admin_id']]);
+                
+                $aula_id = $conn->lastInsertId();
+                $stmt = $conn->prepare("SELECT * FROM aulas WHERE id = ?");
+                $stmt->execute([$aula_id]);
+                $aula = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             
-            // Busca alunos e suas presenças
-            $stmtAlunos = $conn->prepare("
+            resposta(true, 'Aula encontrada', $aula);
+        }
+        
+        // Listar presenças de uma aula
+        if (isset($_GET['aula_id'])) {
+            $aula_id = $_GET['aula_id'];
+            
+            // Busca aula
+            $stmt = $conn->prepare("SELECT a.*, t.nome as turma_nome FROM aulas a 
+                                   JOIN turmas t ON a.turma_id = t.id WHERE a.id = ?");
+            $stmt->execute([$aula_id]);
+            $aula = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Busca alunos com suas presenças
+            $stmt = $conn->prepare("
                 SELECT 
                     al.id as aluno_id,
                     al.nome_completo,
@@ -53,136 +61,62 @@ if ($method === 'GET') {
                 WHERE al.turma_id = ? AND al.ativo = TRUE
                 ORDER BY al.nome_completo ASC
             ");
-            $stmtAlunos->execute([$aulaId, $aula['turma_id']]);
-            $alunos = $stmtAlunos->fetchAll();
+            $stmt->execute([$aula_id, $aula['turma_id']]);
+            $alunos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            sendResponse(true, 'Chamada carregada.', [
+            resposta(true, 'Chamada carregada', [
                 'aula' => $aula,
                 'alunos' => $alunos
             ]);
-            
-        } elseif (isset($_GET['turma_id']) && isset($_GET['data'])) {
-            // Buscar ou criar aula para uma data específica
-            $turmaId = $_GET['turma_id'];
-            $data = $_GET['data'];
-            
-            $stmt = $conn->prepare("SELECT * FROM aulas WHERE turma_id = ? AND data_aula = ?");
-            $stmt->execute([$turmaId, $data]);
-            $aula = $stmt->fetch();
-            
-            if (!$aula) {
-                // Criar aula automaticamente
-                $stmtCreate = $conn->prepare("
-                    INSERT INTO aulas (turma_id, data_aula, admin_id)
-                    VALUES (?, ?, ?)
-                ");
-                $stmtCreate->execute([$turmaId, $data, $_SESSION['admin_id']]);
-                $aulaId = $conn->lastInsertId();
-                
-                $stmt = $conn->prepare("SELECT * FROM aulas WHERE id = ?");
-                $stmt->execute([$aulaId]);
-                $aula = $stmt->fetch();
-            }
-            
-            sendResponse(true, 'Aula encontrada.', $aula);
-            
-        } else {
-            sendResponse(false, 'Parâmetros inválidos.');
         }
     } catch (Exception $e) {
-        error_log("Erro ao carregar chamada: " . $e->getMessage());
-        sendResponse(false, 'Erro ao carregar chamada.');
+        resposta(false, 'Erro ao carregar chamada');
     }
 }
 
-// POST - Registrar chamada completa
+// POST - Salvar chamada
 if ($method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $dados = json_decode(file_get_contents('php://input'), true);
     
-    $aulaId = $data['aula_id'] ?? 0;
-    $presencas = $data['presencas'] ?? [];
+    $aula_id = $dados['aula_id'] ?? 0;
+    $presencas = $dados['presencas'] ?? [];
     
-    if (empty($aulaId) || empty($presencas)) {
-        sendResponse(false, 'Dados incompletos.');
+    if (empty($aula_id) || empty($presencas)) {
+        resposta(false, 'Dados incompletos');
     }
     
     try {
         $conn->beginTransaction();
         
-        // Atualizar ou inserir cada presença
-        $stmtInsert = $conn->prepare("
-            INSERT INTO presencas (aula_id, aluno_id, presente, justificativa, observacao, registrado_por)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-                presente = VALUES(presente),
-                justificativa = VALUES(justificativa),
-                observacao = VALUES(observacao),
-                registrado_por = VALUES(registrado_por),
-                data_registro = NOW()
-        ");
-        
-        foreach ($presencas as $presenca) {
-            $stmtInsert->execute([
-                $aulaId,
-                $presenca['aluno_id'],
-                $presenca['presente'] ? 1 : 0,
-                $presenca['justificativa'] ?? null,
-                $presenca['observacao'] ?? null,
+        foreach ($presencas as $p) {
+            $sql = "INSERT INTO presencas (aula_id, aluno_id, presente, justificativa, observacao, registrado_por)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE
+                        presente = VALUES(presente),
+                        justificativa = VALUES(justificativa),
+                        observacao = VALUES(observacao),
+                        registrado_por = VALUES(registrado_por)";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                $aula_id,
+                $p['aluno_id'],
+                $p['presente'] ? 1 : 0,
+                $p['justificativa'] ?? null,
+                $p['observacao'] ?? null,
                 $_SESSION['admin_id']
             ]);
         }
         
-        // Marcar aula como realizada
-        $stmtAula = $conn->prepare("UPDATE aulas SET realizada = TRUE WHERE id = ?");
-        $stmtAula->execute([$aulaId]);
+        // Marca aula como realizada
+        $stmt = $conn->prepare("UPDATE aulas SET realizada = TRUE WHERE id = ?");
+        $stmt->execute([$aula_id]);
         
         $conn->commit();
-        
-        // Log
-        $logStmt = $conn->prepare("
-            INSERT INTO logs_atividade (admin_id, acao, descricao, ip_address)
-            VALUES (?, 'REGISTRAR_CHAMADA', ?, ?)
-        ");
-        $logStmt->execute([
-            $_SESSION['admin_id'],
-            "Chamada registrada - Aula ID: $aulaId",
-            $_SERVER['REMOTE_ADDR']
-        ]);
-        
-        sendResponse(true, 'Chamada registrada com sucesso!');
-        
+        resposta(true, 'Chamada salva com sucesso!');
     } catch (Exception $e) {
         $conn->rollBack();
-        error_log("Erro ao registrar chamada: " . $e->getMessage());
-        sendResponse(false, 'Erro ao registrar chamada.');
-    }
-}
-
-// PUT - Atualizar presença individual
-if ($method === 'PUT') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    
-    $presencaId = $data['presenca_id'] ?? 0;
-    $presente = $data['presente'] ?? false;
-    $justificativa = $data['justificativa'] ?? null;
-    
-    if (empty($presencaId)) {
-        sendResponse(false, 'ID da presença é obrigatório.');
-    }
-    
-    try {
-        $stmt = $conn->prepare("
-            UPDATE presencas 
-            SET presente = ?, justificativa = ?, registrado_por = ?, data_registro = NOW()
-            WHERE id = ?
-        ");
-        $stmt->execute([$presente ? 1 : 0, $justificativa, $_SESSION['admin_id'], $presencaId]);
-        
-        sendResponse(true, 'Presença atualizada!');
-        
-    } catch (Exception $e) {
-        error_log("Erro ao atualizar presença: " . $e->getMessage());
-        sendResponse(false, 'Erro ao atualizar presença.');
+        resposta(false, 'Erro ao salvar chamada');
     }
 }
 ?>
