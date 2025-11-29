@@ -229,9 +229,78 @@
             border-radius: 8px;
             cursor: pointer;
         }
+        
+        .item-lista-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .item-lista-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn-remove-item {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-remove-item:hover {
+            background: #c82333;
+        }
+
+        .btn-add-item {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-add-item:hover {
+            background: #9a7449;
+        }
+        
+        .form-hint {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
+    <!-- Menu Mobile -->
+    <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" aria-label="Menu de navegação"/>
+    <label for="menu-icon" aria-label="Abrir menu"></label>
+    
+    <!-- Navegação -->
+    <nav class="nav" aria-label="Menu principal"> 		
+        <ul class="pt-5">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="index.html#sobre">Sobre</a></li>
+            <li><a href="index.html#avisos">Avisos</a></li>
+            <li><a href="index.html#cursos">Cursos</a></li>
+            <li><a href="juama.html">Juama</a></li>
+            <li><a href="#" onclick="logout(); return false;">Sair</a></li>
+        </ul>
+    </nav>
+
     <div class="admin-container">
         <!-- Header -->
         <div class="admin-header">
@@ -247,6 +316,12 @@
         
         <!-- Dashboard Cards -->
         <div class="dashboard-cards">
+            <div class="card" onclick="showSection('avisos')">
+                <div class="card-icon"><i class="fas fa-bullhorn"></i></div>
+                <div class="card-title">Avisos</div>
+                <div class="card-value" id="total-avisos">0</div>
+            </div>
+            
             <div class="card" onclick="showSection('turmas')">
                 <div class="card-icon"><i class="fas fa-users"></i></div>
                 <div class="card-title">Turmas</div>
@@ -264,11 +339,27 @@
                 <div class="card-title">Fazer Chamada</div>
                 <div class="card-value"><i class="fas fa-arrow-right"></i></div>
             </div>
-            
-            <div class="card" onclick="showSection('relatorios')">
-                <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-                <div class="card-title">Relatórios</div>
-                <div class="card-value"><i class="fas fa-arrow-right"></i></div>
+        </div>
+        
+        <!-- Seção Avisos -->
+        <div id="section-avisos" class="content-section">
+            <h2 class="section-title">Gerenciar Avisos</h2>
+            <button class="btn-primary-custom" onclick="openModalAviso()">
+                <i class="fas fa-plus"></i> Novo Aviso
+            </button>
+            <div class="table-container">
+                <table id="table-avisos">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Itens</th>
+                            <th>Imagem</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
         
@@ -324,13 +415,51 @@
                 <p>Carregando...</p>
             </div>
         </div>
-        
-        <!-- Seção Relatórios -->
-        <div id="section-relatorios" class="content-section">
-            <h2 class="section-title">Relatórios e Estatísticas</h2>
-            <div id="relatorios-content">
-                <p>Em desenvolvimento...</p>
-            </div>
+    </div>
+    
+    <!-- Modal Aviso -->
+    <div id="modal-aviso" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-aviso-title">Novo Aviso</h2>
+            <form id="form-aviso" onsubmit="saveAviso(event)">
+                <input type="hidden" name="id" id="aviso-id">
+                
+                <div class="form-group-modal">
+                    <label>Título *</label>
+                    <input type="text" name="titulo" id="aviso-titulo" required>
+                </div>
+                
+                <div class="form-group-modal">
+                    <label>Descrição (opcional)</label>
+                    <textarea name="descricao" id="aviso-descricao" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group-modal">
+                    <label>Itens da Lista</label>
+                    <div id="itens-lista-container">
+                        <div class="item-lista-row">
+                            <input type="text" class="item-lista-input" placeholder="Digite um item...">
+                            <button type="button" class="btn-remove-item" onclick="removeItemLista(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-item" onclick="addItemLista()">
+                        <i class="fas fa-plus"></i> Adicionar Item
+                    </button>
+                </div>
+                
+                <div class="form-group-modal">
+                    <label>Caminho da Imagem (ex: avisos/festa_junina.jpeg)</label>
+                    <input type="text" name="imagem" id="aviso-imagem" placeholder="avisos/imagem.jpg">
+                    <small class="form-hint">Coloque a imagem na pasta igreja/img/avisos/</small>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary-custom">Salvar</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('modal-aviso')">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
     

@@ -16,6 +16,7 @@ function showSection(section) {
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     document.getElementById(`section-${section}`).classList.add('active');
     
+    if (section === 'avisos') loadAvisos();
     if (section === 'turmas') loadTurmas();
     if (section === 'alunos') loadAlunos();
     if (section === 'chamada') loadChamadaInicio();
@@ -30,6 +31,208 @@ function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
     const form = document.querySelector(`#${modalId} form`);
     if (form) form.reset();
+}
+
+// ==========================================
+// AVISOS
+// ==========================================
+async function loadAvisos() {
+    try {
+        const response = await fetch(`${API_BASE}/avisos.php`);
+        const result = await response.json();
+        
+        if (result.success) {
+            const tbody = document.querySelector('#table-avisos tbody');
+            tbody.innerHTML = '';
+            
+            result.data.forEach(aviso => {
+                const tr = document.createElement('tr');
+                const itensCount = aviso.itens_lista ? aviso.itens_lista.length : 0;
+                const dataFormatada = new Date(aviso.data_criacao).toLocaleDateString('pt-BR');
+                
+                tr.innerHTML = `
+                    <td>${aviso.titulo}</td>
+                    <td>${itensCount} item(ns)</td>
+                    <td>${aviso.imagem ? '✓' : '-'}</td>
+                    <td>${dataFormatada}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="editAviso(${aviso.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-action btn-delete" onclick="deleteAviso(${aviso.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('total-avisos').textContent = result.data.length;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar avisos:', error);
+        alert('Erro ao carregar avisos');
+    }
+}
+
+function openModalAviso(avisoId = null) {
+    document.getElementById('modal-aviso-title').textContent = avisoId ? 'Editar Aviso' : 'Novo Aviso';
+    document.getElementById('form-aviso').reset();
+    document.getElementById('aviso-id').value = '';
+    
+    // Reseta itens da lista
+    const container = document.getElementById('itens-lista-container');
+    container.innerHTML = `
+        <div class="item-lista-row">
+            <input type="text" class="item-lista-input" placeholder="Digite um item...">
+            <button type="button" class="btn-remove-item" onclick="removeItemLista(this)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    openModal('modal-aviso');
+}
+
+async function editAviso(id) {
+    try {
+        const response = await fetch(`${API_BASE}/avisos.php?id=${id}`);
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const aviso = result.data;
+            
+            document.getElementById('aviso-id').value = aviso.id;
+            document.getElementById('aviso-titulo').value = aviso.titulo;
+            document.getElementById('aviso-descricao').value = aviso.descricao || '';
+            document.getElementById('aviso-imagem').value = aviso.imagem || '';
+            
+            // Preenche itens da lista
+            const container = document.getElementById('itens-lista-container');
+            container.innerHTML = '';
+            
+            if (aviso.itens_lista && aviso.itens_lista.length > 0) {
+                aviso.itens_lista.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'item-lista-row';
+                    row.innerHTML = `
+                        <input type="text" class="item-lista-input" value="${item}" placeholder="Digite um item...">
+                        <button type="button" class="btn-remove-item" onclick="removeItemLista(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    container.appendChild(row);
+                });
+            } else {
+                addItemLista();
+            }
+            
+            openModal('modal-aviso');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar aviso:', error);
+        alert('Erro ao carregar aviso');
+    }
+}
+
+function addItemLista() {
+    const container = document.getElementById('itens-lista-container');
+    const row = document.createElement('div');
+    row.className = 'item-lista-row';
+    row.innerHTML = `
+        <input type="text" class="item-lista-input" placeholder="Digite um item...">
+        <button type="button" class="btn-remove-item" onclick="removeItemLista(this)">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    container.appendChild(row);
+}
+
+function removeItemLista(button) {
+    const container = document.getElementById('itens-lista-container');
+    if (container.children.length > 1) {
+        button.parentElement.remove();
+    } else {
+        alert('Deve haver pelo menos um item!');
+    }
+}
+
+async function saveAviso(event) {
+    event.preventDefault();
+    
+    const id = document.getElementById('aviso-id').value;
+    const titulo = document.getElementById('aviso-titulo').value;
+    const descricao = document.getElementById('aviso-descricao').value;
+    const imagem = document.getElementById('aviso-imagem').value;
+    
+    // Coleta itens da lista
+    const itensInputs = document.querySelectorAll('.item-lista-input');
+    const itens_lista = Array.from(itensInputs)
+        .map(input => input.value.trim())
+        .filter(item => item !== '');
+    
+    const data = {
+        titulo,
+        descricao,
+        itens_lista,
+        imagem: imagem || null
+    };
+    
+    try {
+        let response;
+        
+        if (id) {
+            // Atualizar
+            data.id = id;
+            response = await fetch(`${API_BASE}/avisos.php`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Criar
+            response = await fetch(`${API_BASE}/avisos.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(result.message);
+            closeModal('modal-aviso');
+            loadAvisos();
+        } else {
+            alert(result.message);
+        }
+    } catch (error) {
+        console.error('Erro ao salvar aviso:', error);
+        alert('Erro ao salvar aviso');
+    }
+}
+
+async function deleteAviso(id) {
+    if (!confirm('Deseja realmente remover este aviso?')) return;
+    
+    try {
+        const response = await fetch(`${API_BASE}/avisos.php?id=${id}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Aviso removido!');
+            loadAvisos();
+        } else {
+            alert(result.message);
+        }
+    } catch (error) {
+        console.error('Erro ao deletar aviso:', error);
+        alert('Erro ao deletar aviso');
+    }
 }
 
 // ==========================================
@@ -305,34 +508,34 @@ async function loadChamada() {
             const { aula, alunos } = resultChamada.data;
             
             let html = `
-    <h3>${aula.turma_nome} - ${new Date(data).toLocaleDateString('pt-BR')}</h3>
-    <form onsubmit="salvarChamada(event, ${aulaId})">
-        <table>
-            <thead>
-                <tr>
-                    <th>Aluno</th>
-                    <th>Presente</th>
-                    <th>Faltou</th>
-                </tr>
-            </thead>
-            <tbody>
-`;
-
-alunos.forEach(aluno => {
-    html += `
-        <tr>
-            <td>${aluno.nome_completo}</td>
-            <td>
-                <input type="radio" name="presenca_${aluno.aluno_id}" value="1" 
-                    ${aluno.presente === '1' ? 'checked' : ''}>
-            </td>
-            <td>
-                <input type="radio" name="presenca_${aluno.aluno_id}" value="0" 
-                    ${aluno.presente === '0' ? 'checked' : ''}>
-            </td>
-        </tr>
-    `;
-});
+                <h3>${aula.turma_nome} - ${new Date(data).toLocaleDateString('pt-BR')}</h3>
+                <form onsubmit="salvarChamada(event, ${aulaId})">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Presente</th>
+                                <th>Faltou</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            alunos.forEach(aluno => {
+                html += `
+                    <tr>
+                        <td>${aluno.nome_completo}</td>
+                        <td>
+                            <input type="radio" name="presenca_${aluno.aluno_id}" value="1" 
+                                ${aluno.presente === '1' ? 'checked' : ''}>
+                        </td>
+                        <td>
+                            <input type="radio" name="presenca_${aluno.aluno_id}" value="0" 
+                                ${aluno.presente === '0' ? 'checked' : ''}>
+                        </td>
+                    </tr>
+                `;
+            });
             
             html += `
                         </tbody>
@@ -361,16 +564,16 @@ async function salvarChamada(event, aulaId) {
     const alunos = [...new Set([...formData.keys()].map(k => k.split('_')[1]))];
     
     alunos.forEach(alunoId => {
-    const presente = formData.get(`presenca_${alunoId}`);
-    
-    if (presente !== null) {
-        presencas.push({
-            aluno_id: parseInt(alunoId),
-            presente: presente === '1',
-            observacao: null
-        });
-    }
-});
+        const presente = formData.get(`presenca_${alunoId}`);
+        
+        if (presente !== null) {
+            presencas.push({
+                aluno_id: parseInt(alunoId),
+                presente: presente === '1',
+                observacao: null
+            });
+        }
+    });
     
     try {
         const response = await fetch(`${API_BASE}/chamada.php`, {
@@ -400,6 +603,7 @@ async function salvarChamada(event, aulaId) {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
+    loadAvisos();
     loadTurmas();
     loadAlunos();
 });

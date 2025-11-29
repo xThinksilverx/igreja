@@ -118,10 +118,60 @@ function initMenuMobile() {
 }
 
 // ==========================================
+// CARREGAR AVISOS DINÂMICOS
+// ==========================================
+async function carregarAvisos() {
+    try {
+        const response = await fetch('api/avisos.php');
+        const result = await response.json();
+        
+        if (result.success && result.data.length > 0) {
+            // Pega o primeiro aviso ativo
+            const aviso = result.data[0];
+            
+            // Atualiza título
+            document.getElementById('avisos-titulo').textContent = aviso.titulo;
+            
+            // Atualiza lista de itens
+            const lista = document.getElementById('avisos-lista');
+            lista.innerHTML = '';
+            
+            if (aviso.itens_lista && aviso.itens_lista.length > 0) {
+                aviso.itens_lista.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    lista.appendChild(li);
+                });
+            } else if (aviso.descricao) {
+                const li = document.createElement('li');
+                li.textContent = aviso.descricao;
+                lista.appendChild(li);
+            }
+            
+            // Atualiza imagem
+            if (aviso.imagem) {
+                const img = document.getElementById('avisos-imagem');
+                img.src = `img/${aviso.imagem}`;
+                img.alt = aviso.titulo;
+            }
+        } else {
+            // Avisos padrão caso não tenha nenhum cadastrado
+            document.getElementById('avisos-titulo').textContent = 'Avisos Importantes';
+            document.getElementById('avisos-lista').innerHTML = '<li>Nenhum aviso no momento</li>';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar avisos:', error);
+        document.getElementById('avisos-titulo').textContent = 'Avisos Importantes';
+        document.getElementById('avisos-lista').innerHTML = '<li>Erro ao carregar avisos</li>';
+    }
+}
+
+// ==========================================
 // INICIALIZAÇÃO
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     renderCalendario();
     initMenuMobile();
+    carregarAvisos();
 });
