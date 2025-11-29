@@ -305,39 +305,34 @@ async function loadChamada() {
             const { aula, alunos } = resultChamada.data;
             
             let html = `
-                <h3>${aula.turma_nome} - ${new Date(data).toLocaleDateString('pt-BR')}</h3>
-                <form onsubmit="salvarChamada(event, ${aulaId})">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Aluno</th>
-                                <th>Presente</th>
-                                <th>Faltou</th>
-                                <th>Observação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            alunos.forEach(aluno => {
-                html += `
-                    <tr>
-                        <td>${aluno.nome_completo}</td>
-                        <td>
-                            <input type="radio" name="presenca_${aluno.aluno_id}" value="1" 
-                                ${aluno.presente === '1' ? 'checked' : ''}>
-                        </td>
-                        <td>
-                            <input type="radio" name="presenca_${aluno.aluno_id}" value="0" 
-                                ${aluno.presente === '0' ? 'checked' : ''}>
-                        </td>
-                        <td>
-                            <input type="text" name="obs_${aluno.aluno_id}" 
-                                value="${aluno.observacao || ''}" placeholder="Obs...">
-                        </td>
-                    </tr>
-                `;
-            });
+    <h3>${aula.turma_nome} - ${new Date(data).toLocaleDateString('pt-BR')}</h3>
+    <form onsubmit="salvarChamada(event, ${aulaId})">
+        <table>
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Presente</th>
+                    <th>Faltou</th>
+                </tr>
+            </thead>
+            <tbody>
+`;
+
+alunos.forEach(aluno => {
+    html += `
+        <tr>
+            <td>${aluno.nome_completo}</td>
+            <td>
+                <input type="radio" name="presenca_${aluno.aluno_id}" value="1" 
+                    ${aluno.presente === '1' ? 'checked' : ''}>
+            </td>
+            <td>
+                <input type="radio" name="presenca_${aluno.aluno_id}" value="0" 
+                    ${aluno.presente === '0' ? 'checked' : ''}>
+            </td>
+        </tr>
+    `;
+});
             
             html += `
                         </tbody>
@@ -366,17 +361,16 @@ async function salvarChamada(event, aulaId) {
     const alunos = [...new Set([...formData.keys()].map(k => k.split('_')[1]))];
     
     alunos.forEach(alunoId => {
-        const presente = formData.get(`presenca_${alunoId}`);
-        const observacao = formData.get(`obs_${alunoId}`);
-        
-        if (presente !== null) {
-            presencas.push({
-                aluno_id: parseInt(alunoId),
-                presente: presente === '1',
-                observacao: observacao || null
-            });
-        }
-    });
+    const presente = formData.get(`presenca_${alunoId}`);
+    
+    if (presente !== null) {
+        presencas.push({
+            aluno_id: parseInt(alunoId),
+            presente: presente === '1',
+            observacao: null
+        });
+    }
+});
     
     try {
         const response = await fetch(`${API_BASE}/chamada.php`, {
