@@ -40,7 +40,7 @@ body {
   line-height: 1.7;
   color: var(--color-dark);
   background-color: var(--color-light);
-  background-image: url('img/fundo2.png'); 
+  background-image: url('../igreja/img/fundo.png'); 
   background-size: cover; 
   background-position: center top; 
   background-repeat: no-repeat;
@@ -240,6 +240,7 @@ body {
 .nav ul li:nth-child(3) { transition-delay: 100ms; }
 .nav ul li:nth-child(4) { transition-delay: 50ms; }
 .nav ul li:nth-child(5) { transition-delay: 0ms; }
+.nav ul li:nth-child(6) { transition-delay: 0ms; }
 
 .menu-icon:checked ~ .nav ul li {
   pointer-events: auto;
@@ -254,6 +255,7 @@ body {
 .menu-icon:checked ~ .nav ul li:nth-child(3) { transition-delay: 1560ms; }
 .menu-icon:checked ~ .nav ul li:nth-child(4) { transition-delay: 1640ms; }
 .menu-icon:checked ~ .nav ul li:nth-child(5) { transition-delay: 1720ms; }
+.menu-icon:checked ~ .nav ul li:nth-child(6) { transition-delay: 1800ms; }
 
 .nav ul li a {
   font-size: 9vh;
@@ -639,12 +641,15 @@ body {
 }
 
 .auth-container {
-  background-color: var(--color-white);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(236, 236, 238, 0.95) 100%);
+  backdrop-filter: blur(10px);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(179, 142, 93, 0.3), 
+              0 0 60px rgba(179, 142, 93, 0.1);
   padding: 50px 40px;
   max-width: 500px;
   width: 100%;
+  border: 2px solid rgba(179, 142, 93, 0.2);
 }
 
 .auth-form {
@@ -664,6 +669,7 @@ body {
   font-size: 3.5rem;
   color: var(--color-primary);
   margin-bottom: 15px;
+  filter: drop-shadow(0 4px 8px rgba(179, 142, 93, 0.3));
 }
 
 .form-header h2 {
@@ -679,20 +685,22 @@ body {
 }
 
 .alert-warning {
-  background-color: #fff3cd;
-  border: 1px solid #ffc107;
-  border-radius: 8px;
-  padding: 12px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe9a6 100%);
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 14px;
   margin-top: 15px;
   color: #856404;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
 }
 
 .alert-warning i {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #ffc107;
+  filter: none;
 }
 
 .form-group {
@@ -703,7 +711,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-dark);
   margin-bottom: 8px;
   font-size: 0.95rem;
@@ -717,17 +725,19 @@ body {
 .form-group input {
   width: 100%;
   padding: 14px 16px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid rgba(179, 142, 93, 0.3);
   border-radius: 10px;
   font-size: 1rem;
   font-family: var(--font-family);
+  background-color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(179, 142, 93, 0.1);
+  background-color: var(--color-white);
+  box-shadow: 0 0 0 4px rgba(179, 142, 93, 0.15);
 }
 
 .form-hint {
@@ -741,7 +751,7 @@ body {
 .btn-primary {
   width: 100%;
   padding: 16px;
-  background-color: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9a7449 100%);
   color: var(--color-white);
   border: none;
   border-radius: 10px;
@@ -754,12 +764,13 @@ body {
   gap: 10px;
   transition: all 0.3s ease;
   margin-top: 30px;
+  box-shadow: 0 4px 15px rgba(179, 142, 93, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: #9a7449;
+  background: linear-gradient(135deg, #9a7449 0%, #7d5d3a 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(179, 142, 93, 0.3);
+  box-shadow: 0 6px 20px rgba(179, 142, 93, 0.4);
 }
 
 .btn-primary:active {
@@ -775,6 +786,7 @@ body {
   color: var(--color-primary);
   text-decoration: none;
   font-size: 0.95rem;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
@@ -786,7 +798,7 @@ body {
 .form-divider {
   margin-top: 30px;
   padding-top: 25px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 2px solid rgba(179, 142, 93, 0.2);
 }
 
 .btn-switch {
@@ -797,7 +809,7 @@ body {
   border: 2px solid var(--color-primary);
   border-radius: 10px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -807,9 +819,10 @@ body {
 }
 
 .btn-switch:hover {
-  background-color: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9a7449 100%);
   color: var(--color-white);
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(179, 142, 93, 0.3);
 }
 
 /* Alertas customizados */
@@ -953,6 +966,20 @@ body {
     width: 100%;
     border-radius: 16px;
     padding: 16px;
+  }
+  
+  /* Auth Container Mobile */
+  .auth-container {
+    padding: 30px 25px;
+    margin: 20px;
+  }
+  
+  .form-header h2 {
+    font-size: 1.6rem;
+  }
+  
+  .form-header i {
+    font-size: 2.8rem;
   }
   
   /* Calendário */
