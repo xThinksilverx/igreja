@@ -22,83 +22,167 @@ function initScrollAnimations() {
 // CALENDÁRIO
 // ==========================================
 const MESES = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 
-    'Maio', 'Junho', 'Julho', 'Agosto', 
-    'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    'Janeiro','Fevereiro','Março','Abril',
+    'Maio','Junho','Julho','Agosto',
+    'Setembro','Outubro','Novembro','Dezembro'
 ];
 
-const EVENTOS_SEMANAIS = {
-    0: 'Missa das 19h às 20h', // Domingo
-    3: 'Catequese',             // Quarta
-    4: 'Crisma',                // Quinta
-    6: 'Missa das 07h às 08h'   // Sábado
+const EVENTOS_SEMANAIS = [
+    { diaSemana: 0, titulo: 'Missa 19h',  tipo: 'missa' },
+    { diaSemana: 3, titulo: 'Catequese',  tipo: 'catequese' },
+    { diaSemana: 4, titulo: 'Crisma',     tipo: 'crisma' },
+    { diaSemana: 6, titulo: 'Missa 07h',  tipo: 'missa' },
+];
+
+const TIPO_CORES = {
+    missa:     '#b38e5d',
+    catequese: '#4a90d9',
+    crisma:    '#7b5ea7',
+    evento:    '#28a745',
+    outro:     '#6c757d',
 };
+
+let _calMes = new Date().getMonth();
+let _calAno = new Date().getFullYear();
+let _calEventosDB = [];
+
+function escHtml(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function _carregarEventosMes() {
+    try {
+        const r = await fetch(`api/eventos.php?mes=${_calMes + 1}&ano=${_calAno}`);
+        const res = await r.json();
+        _calEventosDB = res.success ? res.data : [];
+    } catch {
+        _calEventosDB = [];
+    }
+}
+
+function _getEventosDia(ano, mes, dia) {
+    const dateStr = `${ano}-${String(mes + 1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+    const diaSemana = new Date(ano, mes, dia).getDay();
+
+    const semanais = EVENTOS_SEMANAIS
+        .filter(e => e.diaSemana === diaSemana)
+        .map(e => ({ titulo: e.titulo, tipo: e.tipo }));
+
+    const db = _calEventosDB
+        .filter(e => e.data_evento === dateStr)
+        .map(e => ({ titulo: e.titulo, tipo: e.tipo, desc: e.descricao, hora: e.hora_inicio }));
+
+    return [...semanais, ...db];
+}
 
 function renderCalendario() {
     const hoje = new Date();
-    const mes = hoje.getMonth();
-    const ano = hoje.getFullYear();
-    const diaHoje = hoje.getDate();
 
-    // Atualiza o cabeçalho
-    const headerElement = document.getElementById('mes-ano');
-    if (headerElement) {
-        headerElement.textContent = `${MESES[mes]} ${ano}`;
-    }
+    const header = document.getElementById('mes-ano');
+    if (header) header.textContent = `${MESES[_calMes]} ${_calAno}`;
 
-    // Calcula primeiro e último dia do mês
-    const primeiroDia = new Date(ano, mes, 1).getDay();
-    const ultimoDia = new Date(ano, mes + 1, 0).getDate();
+    const primeiroDia = new Date(_calAno, _calMes, 1).getDay();
+    const ultimoDia  = new Date(_calAno, _calMes + 1, 0).getDate();
 
-    // Renderiza o calendário
     const tbody = document.getElementById('dias-calendario');
     if (!tbody) return;
 
     tbody.innerHTML = '';
     let linha = document.createElement('tr');
-    
-    // Células vazias antes do primeiro dia
+
     for (let i = 0; i < primeiroDia; i++) {
         linha.appendChild(document.createElement('td'));
     }
 
-    // Dias do mês
     for (let dia = 1; dia <= ultimoDia; dia++) {
         if (linha.children.length === 7) {
             tbody.appendChild(linha);
             linha = document.createElement('tr');
         }
 
-        const celula = document.createElement('td');
-        celula.textContent = dia;
+        const celula    = document.createElement('td');
+        const diaSemana = new Date(_calAno, _calMes, dia).getDay();
+        const eventos   = _getEventosDia(_calAno, _calMes, dia);
+        const isHoje    = dia === hoje.getDate() && _calMes === hoje.getMonth() && _calAno === hoje.getFullYear();
 
-        // Marca o dia atual
-        if (dia === diaHoje && mes === hoje.getMonth() && ano === hoje.getFullYear()) {
-            celula.classList.add('dia-atual');
-        }
+        if (isHoje) celula.classList.add('dia-atual');
+        if (diaSemana === 0 || diaSemana === 6) celula.classList.add('fim-de-semana');
+        if (eventos.length > 0) celula.classList.add('tem-evento');
 
-        // Adiciona eventos semanais
-        const diaSemana = new Date(ano, mes, dia).getDay();
-        
-        if (diaSemana === 0 || diaSemana === 6) {
-            celula.classList.add('fim-de-semana');
-        }
+        const span = document.createElement('span');
+        span.className = 'dia-numero';
+        span.textContent = dia;
+        celula.appendChild(span);
 
-        if (EVENTOS_SEMANAIS[diaSemana]) {
-            const evento = document.createElement('div');
-            evento.className = 'evento';
-            evento.textContent = EVENTOS_SEMANAIS[diaSemana];
-            celula.appendChild(document.createElement('br'));
-            celula.appendChild(evento);
+        if (eventos.length > 0) {
+            const dots = document.createElement('div');
+            dots.className = 'evento-dots';
+            eventos.slice(0, 3).forEach(ev => {
+                const dot = document.createElement('span');
+                dot.className = 'evento-dot';
+                dot.style.background = TIPO_CORES[ev.tipo] || TIPO_CORES.outro;
+                dots.appendChild(dot);
+            });
+            celula.appendChild(dots);
+
+            const tooltip = document.createElement('div');
+            tooltip.className = 'evento-tooltip';
+            tooltip.innerHTML = eventos.map(ev => `<span>${escHtml(ev.titulo)}</span>`).join('');
+            celula.appendChild(tooltip);
         }
 
         linha.appendChild(celula);
     }
 
-    // Adiciona última linha se tiver conteúdo
-    if (linha.children.length > 0) {
-        tbody.appendChild(linha);
+    if (linha.children.length > 0) tbody.appendChild(linha);
+
+    _renderAgenda(ultimoDia, hoje);
+}
+
+function _renderAgenda(ultimoDia, hoje) {
+    const container = document.getElementById('agenda-eventos');
+    if (!container) return;
+
+    const isCurrentMonth = _calMes === hoje.getMonth() && _calAno === hoje.getFullYear();
+    const diaInicio = isCurrentMonth ? hoje.getDate() : 1;
+
+    const todos = [];
+    for (let dia = diaInicio; dia <= ultimoDia; dia++) {
+        _getEventosDia(_calAno, _calMes, dia).forEach(ev => todos.push({ dia, ...ev }));
     }
+
+    const slice = todos.slice(0, 8);
+
+    if (slice.length === 0) {
+        container.innerHTML = '<p class="sem-eventos">Nenhum evento neste mês.</p>';
+        return;
+    }
+
+    container.innerHTML = slice.map(ev => `
+        <div class="agenda-item">
+            <div class="agenda-dot" style="background:${TIPO_CORES[ev.tipo] || TIPO_CORES.outro}"></div>
+            <div class="agenda-info">
+                <span class="agenda-data">${String(ev.dia).padStart(2,'0')}/${String(_calMes+1).padStart(2,'0')}${ev.hora ? ' · ' + ev.hora.slice(0,5) : ''}</span>
+                <span class="agenda-nome">${escHtml(ev.titulo)}</span>
+                ${ev.desc ? `<span class="agenda-desc">${escHtml(ev.desc)}</span>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+function mesAnterior() {
+    if (_calMes === 0) { _calMes = 11; _calAno--; } else _calMes--;
+    _carregarEventosMes().then(renderCalendario);
+}
+
+function mesSeguinte() {
+    if (_calMes === 11) { _calMes = 0; _calAno++; } else _calMes++;
+    _carregarEventosMes().then(renderCalendario);
+}
+
+async function initCalendario() {
+    await _carregarEventosMes();
+    renderCalendario();
 }
 
 // ==========================================
@@ -171,7 +255,7 @@ async function carregarAvisos() {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
-    renderCalendario();
+    initCalendario();
     initMenuMobile();
     carregarAvisos();
 });

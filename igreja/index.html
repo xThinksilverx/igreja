@@ -109,24 +109,37 @@
     </section>
 
     <!-- Calendário -->
-    <section class="calendario-section">
-        <h2 class="calendario-title">Calendário e Agenda do Mês</h2>
-        <div class="calendario">
-            <div class="calendario-header" id="mes-ano"></div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Dom</th>
-                        <th>Seg</th>
-                        <th>Ter</th>
-                        <th>Qua</th>
-                        <th>Qui</th>
-                        <th>Sex</th>
-                        <th>Sáb</th>
-                    </tr>
-                </thead>
-                <tbody id="dias-calendario"></tbody>
-            </table>
+    <section class="calendario-section" id="calendario">
+        <div style="text-align:center;margin-bottom:32px">
+            <h2 class="section-title">Calendário e Agenda</h2>
+        </div>
+        <div class="calendario-wrapper">
+            <div class="calendario">
+                <div class="calendario-header">
+                    <button class="cal-nav" onclick="mesAnterior()" aria-label="Mês anterior">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="mes-ano"></span>
+                    <button class="cal-nav" onclick="mesSeguinte()" aria-label="Próximo mês">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dom</th><th>Seg</th><th>Ter</th>
+                            <th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dias-calendario"></tbody>
+                </table>
+            </div>
+            <div class="agenda-sidebar">
+                <h3 class="agenda-titulo-sidebar">
+                    <i class="fas fa-calendar-check" style="margin-right:8px;opacity:0.7"></i>Próximos eventos
+                </h3>
+                <div id="agenda-eventos"><p class="sem-eventos">Carregando...</p></div>
+            </div>
         </div>
     </section>
 

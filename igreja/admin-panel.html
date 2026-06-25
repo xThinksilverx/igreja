@@ -282,6 +282,118 @@
             color: #666;
             font-style: italic;
         }
+
+        /* ---- Chamada ---- */
+        .chamada-resumo {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .cr-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px 20px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .cr-item.cr-presente { background: #f0fff4; }
+        .cr-item.cr-faltou   { background: #fff5f5; }
+        .cr-item.cr-pendente { background: #fff8e6; }
+        .cr-num {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+        }
+        .cr-item.cr-presente .cr-num { color: #28a745; }
+        .cr-item.cr-faltou   .cr-num { color: #dc3545; }
+        .cr-item.cr-pendente .cr-num { color: #e6a817; }
+        .cr-label {
+            display: block;
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 4px;
+        }
+        .chamada-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+        .chamada-search {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .chamada-search:focus { border-color: var(--color-primary); }
+        .chamada-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .chamada-aluno {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
+            gap: 0 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 2px solid #eee;
+            background: #fff;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .chamada-aluno.presente { border-color: #28a745; background: #f6fff8; }
+        .chamada-aluno.faltou   { border-color: #dc3545; background: #fff6f6; }
+        .ca-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+            grid-column: 1;
+            grid-row: 1;
+        }
+        .ca-nome   { font-weight: 600; font-size: 0.95rem; color: #333; }
+        .ca-faltas { font-size: 0.78rem; }
+        .ca-botoes {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .ca-btn {
+            padding: 7px 14px;
+            border: 2px solid;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            background: #fff;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+        .ca-btn-presente              { border-color: #28a745; color: #28a745; }
+        .ca-btn-presente.ativo        { background: #28a745;  color: #fff; }
+        .ca-btn-faltou                { border-color: #dc3545; color: #dc3545; }
+        .ca-btn-faltou.ativo          { background: #dc3545;  color: #fff; }
+        .ca-just {
+            grid-column: 1 / -1;
+            grid-row: 2;
+            padding-top: 8px;
+        }
+        .ca-just input {
+            width: 100%;
+            padding: 7px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -334,6 +446,18 @@
                 <div class="card-value" id="total-alunos">0</div>
             </div>
             
+            <div class="card" onclick="showSection('eventos')">
+                <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="card-title">Eventos</div>
+                <div class="card-value" id="total-eventos">0</div>
+            </div>
+
+            <div class="card" onclick="showSection('admins')">
+                <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+                <div class="card-title">Administradores</div>
+                <div class="card-value" id="total-admins">0</div>
+            </div>
+
             <div class="card" onclick="showSection('chamada')">
                 <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
                 <div class="card-title">Fazer Chamada</div>
@@ -389,15 +513,21 @@
         <!-- Seção Alunos -->
         <div id="section-alunos" class="content-section">
             <h2 class="section-title">Gerenciar Alunos</h2>
-            <button class="btn-primary-custom" onclick="openModalAluno()">
-                <i class="fas fa-plus"></i> Novo Aluno
-            </button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                <button class="btn-primary-custom" style="margin-bottom:0" onclick="openModalAluno()">
+                    <i class="fas fa-plus"></i> Novo Aluno
+                </button>
+                <button class="btn-primary-custom" style="margin-bottom:0; background:#28a745;" onclick="exportarAlunosCSV()">
+                    <i class="fas fa-file-csv"></i> Exportar CSV
+                </button>
+            </div>
             <div class="table-container">
                 <table id="table-alunos">
                     <thead>
                         <tr>
                             <th>Nome</th>
                             <th>Turma</th>
+                            <th>Responsável</th>
                             <th>Telefone</th>
                             <th>Faltas</th>
                             <th>Ações</th>
@@ -408,11 +538,54 @@
             </div>
         </div>
         
+        <!-- Seção Administradores -->
+        <div id="section-admins" class="content-section">
+            <h2 class="section-title">Administradores</h2>
+            <button class="btn-primary-custom" onclick="openModalAdmin()">
+                <i class="fas fa-plus"></i> Novo Administrador
+            </button>
+            <div class="table-container">
+                <table id="table-admins">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Último login</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Seção Eventos -->
+        <div id="section-eventos" class="content-section">
+            <h2 class="section-title">Gerenciar Eventos</h2>
+            <button class="btn-primary-custom" onclick="openModalEvento()">
+                <i class="fas fa-plus"></i> Novo Evento
+            </button>
+            <div class="table-container">
+                <table id="table-eventos">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Tipo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Seção Chamada -->
         <div id="section-chamada" class="content-section">
             <h2 class="section-title">Fazer Chamada</h2>
             <div id="chamada-content">
-                <p>Carregando...</p>
+                <p><i class="fas fa-spinner fa-spin"></i> Carregando turmas...</p>
             </div>
         </div>
     </div>
@@ -520,85 +693,156 @@
     <!-- Modal Aluno -->
     <div id="modal-aluno" class="modal">
         <div class="modal-content">
-            <h2>Novo Aluno</h2>
+            <h2 id="modal-aluno-title">Novo Aluno</h2>
             <form id="form-aluno" onsubmit="saveAluno(event)">
+                <input type="hidden" name="id" id="aluno-id">
+
                 <div class="form-group-modal">
                     <label>Nome Completo *</label>
-                    <input type="text" name="nome_completo" required>
+                    <input type="text" name="nome_completo" id="aluno-nome" required>
                 </div>
                 <div class="form-group-modal">
                     <label>Data de Nascimento *</label>
-                    <input type="date" name="data_nascimento" required>
+                    <input type="date" name="data_nascimento" id="aluno-nascimento" required>
                 </div>
                 <div class="form-group-modal">
                     <label>Turma *</label>
-                    <select name="turma_id" required>
+                    <select name="turma_id" id="aluno-turma" required>
                         <option value="">Selecione...</option>
                     </select>
                 </div>
+
+                <h3 style="margin-top: 20px; margin-bottom: 15px; color: var(--color-primary);">Responsável</h3>
                 <div class="form-group-modal">
-                    <label>CPF</label>
-                    <input type="text" name="cpf" placeholder="000.000.000-00">
+                    <label>Nome do Responsável *</label>
+                    <input type="text" name="nome_mae" id="aluno-responsavel" placeholder="Nome completo do responsável" required>
+                    <small class="form-hint">Pai, mãe ou responsável legal</small>
                 </div>
                 <div class="form-group-modal">
-                    <label>Telefone</label>
-                    <input type="text" name="telefone" placeholder="(00) 00000-0000">
+                    <label>Telefone para Contato *</label>
+                    <input type="text" name="telefone_mae" id="aluno-telefone" placeholder="(00) 00000-0000" required>
                 </div>
-                <div class="form-group-modal">
-                    <label>E-mail</label>
-                    <input type="email" name="email">
-                </div>
-                <div class="form-group-modal">
-                    <label>Endereço</label>
-                    <input type="text" name="endereco">
-                </div>
-                <div class="form-group-modal">
-                    <label>Bairro</label>
-                    <input type="text" name="bairro">
-                </div>
-                <div class="form-group-modal">
-                    <label>CEP</label>
-                    <input type="text" name="cep" placeholder="00000-000">
-                </div>
-                <h3 style="margin-top: 20px;">Responsáveis</h3>
-                <div class="form-group-modal">
-                    <label>Nome da Mãe</label>
-                    <input type="text" name="nome_mae">
-                </div>
-                <div class="form-group-modal">
-                    <label>Telefone da Mãe</label>
-                    <input type="text" name="telefone_mae" placeholder="(00) 00000-0000">
-                </div>
-                <div class="form-group-modal">
-                    <label>Nome do Pai</label>
-                    <input type="text" name="nome_pai">
-                </div>
-                <div class="form-group-modal">
-                    <label>Telefone do Pai</label>
-                    <input type="text" name="telefone_pai" placeholder="(00) 00000-0000">
-                </div>
-                <h3 style="margin-top: 20px;">Informações Religiosas</h3>
-                <div class="form-group-modal">
-                    <label>
-                        <input type="checkbox" name="batizado" value="1">
-                        Já foi batizado
-                    </label>
-                </div>
-                <div class="form-group-modal">
-                    <label>Data do Batismo</label>
-                    <input type="date" name="data_batismo">
-                </div>
-                <div class="form-group-modal">
-                    <label>Paróquia do Batismo</label>
-                    <input type="text" name="paroquia_batismo">
-                </div>
-                <div class="form-group-modal">
+
+                <div class="form-group-modal" style="margin-top: 20px;">
                     <label>Observações</label>
-                    <textarea name="observacoes" rows="3"></textarea>
+                    <textarea name="observacoes" id="aluno-observacoes" rows="3" placeholder="Informações relevantes (necessidades especiais, alergias, etc.)"></textarea>
                 </div>
+
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary-custom">Salvar</button>
                     <button type="button" class="btn-cancel" onclick="closeModal('modal-aluno')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Histórico de Faltas -->
+    <div id="modal-historico" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <h2 id="modal-historico-nome">Histórico de Faltas</h2>
+            <div id="historico-content">
+                <p>Carregando...</p>
+            </div>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button type="button" class="btn-cancel" onclick="closeModal('modal-historico')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alunos da Turma -->
+    <div id="modal-turma-alunos" class="modal">
+        <div class="modal-content" style="max-width:700px">
+            <h2 id="modal-turma-alunos-titulo">Alunos da Turma</h2>
+            <div style="overflow-x:auto;margin-top:15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Responsável</th>
+                            <th>Telefone</th>
+                            <th style="text-align:center;width:80px">Faltas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-turma-alunos-body"></tbody>
+                </table>
+            </div>
+            <div class="modal-buttons" style="margin-top:20px">
+                <button type="button" class="btn-cancel" onclick="closeModal('modal-turma-alunos')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Administrador -->
+    <div id="modal-admin" class="modal">
+        <div class="modal-content">
+            <h2>Novo Administrador</h2>
+            <form id="form-admin" onsubmit="saveAdmin(event)">
+                <div class="form-group-modal">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="admin-novo-nome" required placeholder="Nome completo">
+                </div>
+                <div class="form-group-modal">
+                    <label>E-mail *</label>
+                    <input type="email" id="admin-novo-email" required placeholder="email@exemplo.com">
+                </div>
+                <div class="form-group-modal">
+                    <label>Senha *</label>
+                    <input type="password" id="admin-novo-senha" minlength="8" required placeholder="Mínimo 8 caracteres">
+                </div>
+                <div class="form-group-modal">
+                    <label>Confirmar Senha *</label>
+                    <input type="password" id="admin-novo-senha-confirm" minlength="8" required placeholder="Repita a senha">
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary-custom">Criar Administrador</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('modal-admin')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Evento -->
+    <div id="modal-evento" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-evento-title">Novo Evento</h2>
+            <form id="form-evento" onsubmit="saveEvento(event)">
+                <input type="hidden" name="id" id="evento-id">
+
+                <div class="form-group-modal">
+                    <label>Título *</label>
+                    <input type="text" name="titulo" id="evento-titulo" required>
+                </div>
+                <div class="form-group-modal">
+                    <label>Data *</label>
+                    <input type="date" name="data_evento" id="evento-data" required>
+                </div>
+                <div class="form-group-modal" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div>
+                        <label>Hora de início</label>
+                        <input type="time" name="hora_inicio" id="evento-hora-inicio">
+                    </div>
+                    <div>
+                        <label>Hora de fim</label>
+                        <input type="time" name="hora_fim" id="evento-hora-fim">
+                    </div>
+                </div>
+                <div class="form-group-modal">
+                    <label>Tipo</label>
+                    <select name="tipo" id="evento-tipo">
+                        <option value="missa">Missa</option>
+                        <option value="catequese">Catequese</option>
+                        <option value="crisma">Crisma</option>
+                        <option value="evento" selected>Evento</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <div class="form-group-modal">
+                    <label>Descrição</label>
+                    <textarea name="descricao" id="evento-descricao" rows="3" placeholder="Detalhes do evento (opcional)"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary-custom">Salvar</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('modal-evento')">Cancelar</button>
                 </div>
             </form>
         </div>
